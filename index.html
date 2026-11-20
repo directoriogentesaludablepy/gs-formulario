@@ -333,7 +333,7 @@ document.addEventListener('change',function(e){
   }
   if(t.name==='epp') $('eppBox').style.display = t.value==='Sí'?'block':'none';
   if(t.name==='trat') $('tratBox').style.display = t.value==='Sí'?'block':'none';
-  if(t.name==='rx_prev'||t.name==='colores') $('ob_'+t.name).className='oblig';
+  if(t.name==='colores') $('ob_'+t.name).className='oblig';
   /* si el aviso rojo ya no corresponde, se borra */
   if($('err').className==='err ver' && !validarSinMarcar()) $('err').className='err';
   if(t.id==='emp') $('empOtra').style.display = t.value==='__otra'?'block':'none';
@@ -392,7 +392,7 @@ function datos(){
     d.primerTrabajo=$('primerTrabajo').checked;
     d.empAnt=val('empAnt'); d.puestoAnt=val('puestoAnt'); d.tiempoAnt=val('tiempoAnt');
     d.laborales=marcados('data-laba'); d.accidentes=marcados('data-acca');
-    d.rx_prev=radio('rx_prev'); d.colores=radio('colores');
+    d.colores=radio('colores');
     d.pers=marcados('data-pers'); d.persOtros=val('persOtros');
     d.port=marcados('data-port');
     d.hab=marcados('data-hab'); d.habOtros=val('habOtros');
@@ -411,7 +411,7 @@ function resumir(){
   var h='<b>'+esc(d.ape.toUpperCase())+', '+esc(propio(d.nom))+'</b><br>Cédula '+esc(d.ci)+' · '+esc(d.emp)+'<br>';
   if(TIPO==='admisional'){
     h+='Trabajo anterior: <b>'+esc(d.primerTrabajo?'es tu primer trabajo':(d.empAnt||'—'))+'</b><br>'
-      +'Radiografía de tórax: <b>'+esc(d.rx_prev)+'</b> · Distinguís los colores: <b>'+esc(d.colores)+'</b><br>'
+      +'Distinguís los colores: <b>'+esc(d.colores)+'</b><br>'
       +'Marcaste <b>'+(d.laborales.length+d.accidentes.length)+'</b> en trabajo y accidentes, <b>'+d.pers.length+'</b> en salud, <b>'+d.port.length+'</b> condiciones y <b>'+d.hab.length+'</b> hábitos.<br>'
       +'Medicamentos: <b>'+(d.meds.length?esc(d.meds.join(', ')):'ninguno')+'</b>';
   } else {
