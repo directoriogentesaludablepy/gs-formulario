@@ -72,6 +72,20 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
 .elegir button.anu b{color:#4a6b06}
 .elegir button:active{transform:scale(.99)}
 .cambiar{background:none;border:0;color:var(--azul);font:inherit;font-size:15px;text-decoration:underline;padding:0;margin:4px 0 0;cursor:pointer}
+/* (v3.4) la opción "no tengo problemas…" de cada parte */
+.op.ning{border-style:dashed}
+.op.ning.on{border-style:solid;border-color:var(--verde-o);background:#f1f8e2}
+.op.ning input{accent-color:var(--verde-o)}
+.grupo.falta h3{background:var(--rojo)}
+.grupo.falta .op{border-color:#e6b8b4}
+/* (v3.4) antecedentes familiares: quién */
+.famBox{background:#f7f9fc;border:1.5px solid var(--azul);border-top:0;border-radius:0 0 12px 12px;padding:6px 14px 12px;margin-top:-6px}
+.famBox p{margin:4px 0 0;font-size:15px;font-weight:600}
+.famBox.falta{border-color:var(--rojo);background:#fdf3f2}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chips button{font:inherit;font-size:15px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;color:var(--ink)}
+.chips button[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:700}
+.hab .esp{margin-top:8px}
 </style>
 </head>
 <body>
@@ -103,10 +117,10 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
     <h1>Tus datos</h1>
     <p class="ayuda">Escribilos como figuran en tu cédula de identidad.</p>
     <button type="button" class="cambiar" id="cambiarTipo" style="display:none">¿No es tu examen? Cambiar</button>
-    <label class="campo" for="ape">Apellidos <small>Todos tus apellidos</small></label>
-    <input type="text" id="ape" autocomplete="family-name" autocapitalize="words">
     <label class="campo" for="nom">Nombres <small>Todos tus nombres</small></label>
     <input type="text" id="nom" autocomplete="given-name" autocapitalize="words">
+    <label class="campo" for="ape">Apellidos <small>Todos tus apellidos</small></label>
+    <input type="text" id="ape" autocomplete="family-name" autocapitalize="words">
     <label class="campo" for="ci">Número de cédula de identidad</label>
     <input type="text" id="ci" inputmode="numeric" autocomplete="off">
     <div class="fila2">
@@ -141,18 +155,18 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
   <!-- ANUAL · 3 -->
   <section id="s2">
     <h1>Tu salud</h1>
-    <p class="ayuda">Marcá <b>solo lo que SÍ</b> te pasa. Podés avanzar aunque no marques nada en alguna parte.</p>
+    <p class="ayuda">Respondé <b>cada parte</b>: marcá lo que te pasa. Si en esa parte no te pasa nada, marcá la <b>última opción</b> (por ejemplo: «No tengo problemas digestivos»).</p>
     <h3>¿Estás realizando algún tratamiento?</h3>
     <div class="sn" id="trat"><label><input type="radio" name="trat" value="Sí"><span>Sí</span></label><label><input type="radio" name="trat" value="No" checked><span>No</span></label></div>
     <div id="tratBox" style="display:none"><label class="campo" for="tratCual">¿Cuál? <small>Contanos qué tratamiento y desde cuándo</small></label><input type="text" id="tratCual"></div>
     <div id="pats"></div>
   </section>
 
-  <!-- ANUAL · 4 -->
-  <section id="s3">
-    <h1>Familia y observaciones</h1>
-    <label class="campo" for="fam">Antecedentes de enfermedades en tu familia <small>Por ejemplo: padre con presión alta, madre con diabetes. Si no hay, dejá en blanco.</small></label>
-    <textarea id="fam"></textarea>
+  <!-- FAMILIA (los dos tipos) -->
+  <section id="sFam">
+    <h1>Tu familia</h1>
+    <p class="ayuda">¿Tenés algún familiar cercano que <b>sepas</b> que tenga alguna de estas enfermedades? Tocá la enfermedad y después <b>quién</b> la tiene. Si no sabés de ninguno, marcá la última opción.</p>
+    <div id="fams" class="grupo"></div>
     <label class="campo" for="obs">¿Algo más que quieras contarle al médico? <small>Es opcional</small></label>
     <textarea id="obs"></textarea>
   </section>
@@ -163,7 +177,7 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
     <p class="ayuda">Contanos sobre tu <b>último</b> trabajo, antes de este.</p>
     <label class="op" id="primerOp"><input type="checkbox" id="primerTrabajo"><span><b>Es mi primer trabajo</b><small>No trabajé antes en ninguna empresa.</small></span></label>
     <div id="antBox">
-      <label class="campo" for="empAnt">Nombre de la empresa</label>
+      <label class="campo" for="empAnt">Trabajo anterior – Empresa <small>El nombre de la empresa donde trabajaste antes</small></label>
       <input type="text" id="empAnt" autocomplete="off">
       <label class="campo" for="puestoAnt">¿Qué hacías ahí? <small>Tu puesto o tarea. Por ejemplo: cajero, albañil, vendedor</small></label>
       <input type="text" id="puestoAnt" autocomplete="off">
@@ -180,11 +194,11 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
   <!-- ADMISIONAL · 3 -->
   <section id="a2">
     <h1>Tu salud</h1>
-    <p class="ayuda">Primero, 2 preguntas que tenés que contestar con Sí o No.</p>
+    <p class="ayuda">Primero, una pregunta que tenés que contestar con Sí o No.</p>
     <div id="obligs"></div>
-    <p class="ayuda" style="margin-top:18px">Después, marcá <b>solo lo que SÍ</b> te pasa o te pasó. Lo que no marques se toma como NO.</p>
-    <h3>¿Tuviste o tenés…?</h3>
-    <div id="pers"></div>
+    <p class="ayuda" style="margin-top:18px">Después, marcá lo que te pasa o te pasó. Si no tuviste ninguno, marcá la <b>última opción</b>.</p>
+    <div class="grupo" id="persG"><h3>¿Tuviste o tenés…?</h3>
+    <div id="pers"></div></div>
     <label class="campo" for="persOtros">Otros <small>Algo que no esté en la lista. Es opcional.</small></label>
     <input type="text" id="persOtros" autocomplete="off">
   </section>
@@ -192,26 +206,17 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
   <!-- ADMISIONAL · 4 -->
   <section id="a3">
     <h1>¿Tenés alguna de estas condiciones?</h1>
-    <p class="ayuda">Marcá <b>solo lo que SÍ</b> tenés o te dijo un médico que tenés. Si no tenés ninguna, tocá Siguiente.</p>
-    <div id="port"></div>
+    <p class="ayuda">Marcá lo que tenés o te dijo un médico que tenés. Si no tenés ninguna, marcá la <b>última opción</b>.</p>
+    <div class="grupo" id="portG"><div id="port"></div></div>
   </section>
 
   <!-- ADMISIONAL · 5 -->
   <section id="a4">
-    <h1>Hábitos y medicamentos</h1>
-    <p class="ayuda">Marcá <b>solo lo que SÍ</b> hacés.</p>
-    <h3>Hábitos</h3>
+    <h1>Tus hábitos</h1>
+    <p class="ayuda">Respondé <b>Sí o No</b> en cada pregunta.</p>
     <div id="habs"></div>
     <label class="campo" for="habOtros">Otros hábitos <small>Es opcional</small></label>
     <input type="text" id="habOtros" autocomplete="off">
-    <h3>Medicamentos que tomás hoy</h3>
-    <p class="ayuda" style="margin:6px 0 0">Escribí el nombre de cada medicamento. Si no tomás ninguno, dejalo en blanco.</p>
-    <input type="text" class="med" aria-label="Medicamento 1" placeholder="Medicamento 1">
-    <input type="text" class="med" aria-label="Medicamento 2" placeholder="Medicamento 2">
-    <input type="text" class="med" aria-label="Medicamento 3" placeholder="Medicamento 3">
-    <input type="text" class="med" aria-label="Medicamento 4" placeholder="Medicamento 4">
-    <label class="campo" for="obsA">¿Algo más que quieras contarle al médico? <small>Es opcional</small></label>
-    <textarea id="obsA"></textarea>
   </section>
 
   <!-- REVISAR (los dos tipos) -->
@@ -259,16 +264,16 @@ function corredor(exito, falla){
   };
 }
 var google = { script: { get run(){ return corredor(null, null); } } };
-var RUTAS = { anual: ['s0','s1','s2','s3','s4'], admisional: ['s0','a1','a2','a3','a4','s4'] };
-var SECCIONES = ['sTipo','s0','s1','s2','s3','a1','a2','a3','a4','s4','fin'];
+var RUTAS = { anual: ['s0','s1','s2','sFam','s4'], admisional: ['s0','a1','a2','a3','a4','sFam','s4'] };
+var SECCIONES = ['sTipo','s0','s1','s2','sFam','a1','a2','a3','a4','s4','fin'];
 var TIPO = '', PASOS = [], paso = 0, enviando = false;
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function todos(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
 
 /* una opción marcable: [id, texto, (pregunta para especificar), (ayuda simple)] */
-function opcion(it,pref,texto){
-  var h='<label class="op" data-id="'+it[0]+'"><input type="checkbox" data-'+pref+'="'+it[0]+'"><span>'+esc(texto||it[1])+(it[3]?'<small>'+esc(it[3])+'</small>':'')+'</span></label>';
+function opcion(it,pref,texto,ning){
+  var h='<label class="op'+(ning?' ning':'')+'" data-id="'+it[0]+'"><input type="checkbox" data-'+pref+'="'+it[0]+'"'+(ning?' data-ning="1"':'')+'><span>'+esc(texto||it[1])+(it[3]?'<small>'+esc(it[3])+'</small>':'')+'</span></label>';
   if(it[2]) h+='<div class="esp" data-esp="'+it[0]+'" style="display:none"><input type="text" data-espv="'+it[0]+'" placeholder="'+esc(it[2])+'" aria-label="'+esc(it[2])+'"></div>';
   return h;
 }
@@ -276,8 +281,9 @@ function armar(){
   /* anual */
   $('labs').innerHTML=CAT.laborales.map(function(i){return opcion(i,'lab')}).join('');
   $('accs').innerHTML=CAT.accidentes.map(function(i){return opcion(i,'acc')}).join('');
-  $('pats').innerHTML=CAT.patologicos.map(function(g){
-    return '<h3>'+esc(g.g)+'</h3>'+g.items.map(function(i){return opcion(i,'pat')}).join('');
+  /* (v3.4) cada parte es un grupo: la última opción ("no tengo problemas…") es excluyente */
+  $('pats').innerHTML=CAT.patologicos.map(function(g,n){
+    return '<div class="grupo" id="pg_'+n+'"><h3>'+esc(g.g)+'</h3>'+g.items.map(function(i){return opcion(i,'pat',null,i[0]===g.ninguno)}).join('')+'</div>';
   }).join('');
   /* admisional */
   $('labsA').innerHTML=CAT.laborales.map(function(i){return opcion(i,'laba')}).join('');
@@ -286,9 +292,27 @@ function armar(){
     return '<div class="oblig" id="ob_'+o[0]+'"><span class="marca">Obligatoria</span><p>'+esc(o[2])+'</p>'
       +'<div class="sn"><label><input type="radio" name="'+o[0]+'" value="Sí"><span>Sí</span></label><label><input type="radio" name="'+o[0]+'" value="No"><span>No</span></label></div></div>';
   }).join('');
-  $('pers').innerHTML=CAT.personales.map(function(i){return opcion(i,'pers')}).join('');
-  $('port').innerHTML=CAT.portador.map(function(i){return opcion(i,'port')}).join('');
-  $('habs').innerHTML=CAT.habitos.map(function(i){return opcion(i,'hab')}).join('');
+  var NING = CAT.ninguno || {};
+  $('pers').innerHTML=CAT.personales.map(function(i){return opcion(i,'pers',null,i[0]===NING.pers)}).join('');
+  $('port').innerHTML=CAT.portador.map(function(i){return opcion(i,'port',null,i[0]===NING.port)}).join('');
+  /* (v3.4) hábitos con Sí o No */
+  var HSN = CAT.habitosSN || {};
+  $('habs').innerHTML=CAT.habitos.map(function(i){
+    var q = (HSN[i[0]]||[])[0] || i[1];
+    return '<div class="oblig hab" id="hb_'+i[0]+'"><p>'+esc(q)+'</p>'
+      +'<div class="sn"><label><input type="radio" name="hab_'+i[0]+'" value="Sí"><span>Sí</span></label><label><input type="radio" name="hab_'+i[0]+'" value="No"><span>No</span></label></div>'
+      +(i[2]?'<div class="esp" data-habesp="'+i[0]+'" style="display:none"><input type="text" data-espv="'+i[0]+'" placeholder="'+esc(i[2])+'" aria-label="'+esc(i[2])+'"></div>':'')+'</div>';
+  }).join('');
+  /* (v3.4) antecedentes familiares: enfermedad y quién */
+  var PAR = CAT.parientes || [];
+  $('fams').innerHTML=(CAT.familiares||[]).map(function(f){
+    return opcion([f[0],f[1]],'fam')
+      +'<div class="famBox" data-fambox="'+f[0]+'" style="display:none"><p>¿Quién?</p><div class="chips">'
+      +PAR.map(function(p){return '<button type="button" data-pariente="'+esc(p)+'" aria-pressed="false">'+esc(p)+'</button>'}).join('')+'</div>'
+      +(f[2]?'<input type="text" data-famcual="'+f[0]+'" placeholder="'+esc(f[2])+'" aria-label="'+esc(f[2])+'">':'')
+      +'<input type="text" data-famnota="'+f[0]+'" placeholder="Aclaración (opcional). Ej.: abuela por parte de mamá" aria-label="Aclaración">'
+      +'</div>';
+  }).join('')+(CAT.famNinguno?opcion(CAT.famNinguno,'fam',null,true):'');
   var o='<option value="">Elegí la empresa</option>'+EMPRESAS.map(function(e){return '<option>'+esc(e)+'</option>'}).join('')+'<option value="__otra">Otra empresa</option>';
   $('emp').innerHTML=o;
 }
@@ -323,9 +347,20 @@ function mostrarElegir(){
 document.addEventListener('change',function(e){
   var t=e.target;
   if(t.type==='checkbox'&&t.closest('.op')){
-    var op=t.closest('.op'); op.className='op'+(t.checked?' on':'');
-    var id=op.getAttribute('data-id');
-    if(id){ var b=op.parentNode.querySelector('[data-esp="'+id+'"]'); if(b) b.style.display=t.checked?'block':'none'; }
+    pintarOp(t);
+    /* (v3.4) la última opción ("no tengo…") es excluyente dentro de su parte */
+    var g=t.closest('.grupo');
+    if(g && t.checked){
+      todos('#'+g.id+' .op input[type=checkbox]').forEach(function(o){
+        if(o!==t && (t.getAttribute('data-ning')==='1' || o.getAttribute('data-ning')==='1') && o.checked){ o.checked=false; pintarOp(o); }
+      });
+    }
+    if(g) g.classList.remove('falta');
+  }
+  if(t.name && t.name.indexOf('hab_')===0){
+    var hid=t.name.slice(4), hb=document.querySelector('[data-habesp="'+hid+'"]');
+    if(hb) hb.style.display=t.value==='Sí'?'block':'none';
+    $('hb_'+hid).className='oblig hab';
   }
   if(t.id==='primerTrabajo'){
     ['empAnt','puestoAnt','tiempoAnt'].forEach(function(k){ $(k).disabled=t.checked; });
@@ -339,6 +374,36 @@ document.addEventListener('change',function(e){
   if(t.id==='emp') $('empOtra').style.display = t.value==='__otra'?'block':'none';
   if(t.id==='nac') edad();
 });
+/* pinta una opción marcada y muestra lo que depende de ella */
+function pintarOp(t){
+  var op=t.closest('.op'), ning=op.classList.contains('ning');
+  op.className='op'+(ning?' ning':'')+(t.checked?' on':'');
+  var id=op.getAttribute('data-id');
+  if(id){
+    var b=op.parentNode.querySelector('[data-esp="'+id+'"]'); if(b) b.style.display=t.checked?'block':'none';
+    var f=op.parentNode.querySelector('[data-fambox="'+id+'"]'); if(f){ f.style.display=t.checked?'block':'none'; f.classList.remove('falta'); }
+  }
+}
+/* (v3.4) los botones de "¿Quién?" */
+document.addEventListener('click',function(e){
+  var b=e.target.closest && e.target.closest('[data-pariente]');
+  if(!b) return;
+  b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true');
+  var box=b.closest('.famBox'); if(box) box.classList.remove('falta');
+  if($('err').className==='err ver' && !validarSinMarcar()) $('err').className='err';
+});
+function famElegidos(){
+  return todos('input[data-fam]:checked').filter(function(i){return i.getAttribute('data-ning')!=='1'}).map(function(i){
+    var id=i.getAttribute('data-fam'), box=document.querySelector('[data-fambox="'+id+'"]');
+    var cual=box&&box.querySelector('[data-famcual]'), nota=box&&box.querySelector('[data-famnota]');
+    return { id:id, quienes: box ? todos('[data-fambox="'+id+'"] [aria-pressed="true"]').map(function(x){return x.getAttribute('data-pariente')}) : [],
+      cual: cual ? cual.value.replace(/^\s+|\s+$/g,'') : '', nota: nota ? nota.value.replace(/^\s+|\s+$/g,'') : '' };
+  });
+}
+function famNinguno(){ return todos('input[data-fam][data-ning="1"]:checked').length>0; }
+function nombreFam(id){ var f=(CAT.familiares||[]).filter(function(x){return x[0]===id})[0]; return f?f[1]:''; }
+/* una parte sin responder: se pinta y se avisa */
+function faltaGrupo(g, msg){ if(!soloMirar){ g.classList.add('falta'); } return msg; }
 function edad(){
   var v=$('nac').value; if(!v){$('edad').textContent='—';return}
   var p=v.split('-'), h=new Date(), e=h.getFullYear()-(+p[0]);
@@ -350,12 +415,18 @@ function marcados(attr){
 }
 function radio(nombre){ var r=document.querySelector('input[name="'+nombre+'"]:checked'); return r?r.value:''; }
 function val(id){return $(id).value.replace(/^\s+|\s+$/g,'')}
-function mostrarError(m){ var e=$('err'); e.textContent=m; e.className='err ver'; e.scrollIntoView({block:'center'}); }
+function mostrarError(m){
+  var e=$('err'); e.textContent=m; e.className='err ver';
+  /* (v3.4) lleva a la parte que falta responder, si hay una marcada */
+  var f=document.querySelector('section.ver .falta');
+  if(f) f.parentNode.insertBefore(e,f); else $('main').appendChild(e);
+  (f||e).scrollIntoView({block:'center'});
+}
 
 function validar(){
   var s=PASOS[paso];
   if(s==='s0'){
-    if(!val('ape')||!val('nom')) return 'Escribí tus apellidos y tus nombres.';
+    if(!val('nom')||!val('ape')) return 'Escribí tus nombres y tus apellidos.';
     if(!/^[0-9.\- ]{4,15}$/.test(val('ci'))) return 'Revisá tu número de cédula: solo números.';
     if(!$('nac').value) return 'Elegí tu fecha de nacimiento.';
     var e=parseInt($('edad').textContent,10); if(isNaN(e)||e<14||e>100) return 'Revisá tu fecha de nacimiento.';
@@ -365,13 +436,37 @@ function validar(){
     if(val('tel').replace(/\D/g,'').length<7) return 'Revisá tu número de teléfono.';
   }
   if(s==='a1' && !$('primerTrabajo').checked){
-    if(!val('empAnt')) return 'Escribí el nombre de tu última empresa, o marcá "Es mi primer trabajo".';
+    if(!val('empAnt')) return 'Escribí la empresa de tu trabajo anterior, o marcá "Es mi primer trabajo".';
     if(!val('puestoAnt')) return 'Escribí qué hacías en tu trabajo anterior.';
   }
   if(s==='a2'){
     for(var i=0;i<CAT.obligatorias.length;i++){
       var o=CAT.obligatorias[i];
       if(!radio(o[0])){ if(!soloMirar) $('ob_'+o[0]).className='oblig falta'; return 'Respondé Sí o No: '+o[2]; }
+    }
+    if(!marcados('data-pers').length) return faltaGrupo($('persG'), 'Marcá lo que tuviste o, si no tuviste ninguno, la última opción.');
+  }
+  if(s==='a3' && !marcados('data-port').length) return faltaGrupo($('portG'), 'Marcá lo que tenés o, si no tenés ninguna, la última opción.');
+  if(s==='a4'){
+    for(var h=0;h<CAT.habitos.length;h++){
+      var hb=CAT.habitos[h];
+      if(!radio('hab_'+hb[0])){ if(!soloMirar) $('hb_'+hb[0]).className='oblig hab falta'; return 'Respondé Sí o No: '+(((CAT.habitosSN||{})[hb[0]]||[])[0]||hb[1]); }
+    }
+  }
+  if(s==='s2'){
+    for(var g=0;g<CAT.patologicos.length;g++){
+      var gr=CAT.patologicos[g], hay=gr.items.some(function(it){ var x=document.querySelector('input[data-pat="'+it[0]+'"]'); return x&&x.checked; });
+      if(!hay){
+        var ult=gr.items.filter(function(it){return it[0]===gr.ninguno})[0];
+        return faltaGrupo($('pg_'+g), 'Respondé la parte «'+gr.g+'»: marcá lo que te pasa'+(ult?' o «'+ult[1].replace(/\.$/,'')+'»':'')+'.');
+      }
+    }
+  }
+  if(s==='sFam'){
+    var fe=famElegidos();
+    if(!fe.length && !famNinguno()) return faltaGrupo($('fams'), 'Marcá una enfermedad de tu familia o «Ninguno que yo sepa».');
+    for(var k=0;k<fe.length;k++){
+      if(!fe[k].quienes.length){ var bx=document.querySelector('[data-fambox="'+fe[k].id+'"]'); if(bx&&!soloMirar) bx.classList.add('falta'); return 'Tocá quién tiene «'+nombreFam(fe[k].id)+'».'; }
     }
   }
   if(s==='s4' && !$('jura').checked) return 'Para enviar, marcá que lo que completaste es verdad.';
@@ -395,15 +490,16 @@ function datos(){
     d.colores=radio('colores');
     d.pers=marcados('data-pers'); d.persOtros=val('persOtros');
     d.port=marcados('data-port');
-    d.hab=marcados('data-hab'); d.habOtros=val('habOtros');
-    d.meds=todos('input.med').map(function(i){return i.value.replace(/^\s+|\s+$/g,'')}).filter(String);
-    d.obs=val('obsA');
+    d.hab=CAT.habitos.filter(function(h){return radio('hab_'+h[0])==='Sí'}).map(function(h){return h[0]});
+    d.habOtros=val('habOtros');
   } else {
     d.laborales=marcados('data-lab'); d.accidentes=marcados('data-acc');
     d.epp=radio('epp')||'No'; d.eppCual=val('eppCual');
     d.trat=radio('trat')||'No'; d.tratCual=val('tratCual');
-    d.pat=marcados('data-pat'); d.fam=val('fam'); d.obs=val('obs');
+    d.pat=marcados('data-pat');
   }
+  /* (v3.4) los dos tipos */
+  d.famList=famElegidos(); d.famNinguno=famNinguno(); d.obs=val('obs');
   return d;
 }
 function resumir(){
@@ -412,11 +508,11 @@ function resumir(){
   if(TIPO==='admisional'){
     h+='Trabajo anterior: <b>'+esc(d.primerTrabajo?'es tu primer trabajo':(d.empAnt||'—'))+'</b><br>'
       +'Distinguís los colores: <b>'+esc(d.colores)+'</b><br>'
-      +'Marcaste <b>'+(d.laborales.length+d.accidentes.length)+'</b> en trabajo y accidentes, <b>'+d.pers.length+'</b> en salud, <b>'+d.port.length+'</b> condiciones y <b>'+d.hab.length+'</b> hábitos.<br>'
-      +'Medicamentos: <b>'+(d.meds.length?esc(d.meds.join(', ')):'ninguno')+'</b>';
+      +'Marcaste <b>'+(d.laborales.length+d.accidentes.length)+'</b> en trabajo y accidentes, y respondiste tu salud y tus hábitos.<br>';
   } else {
-    h+='Marcaste <b>'+d.laborales.length+'</b> en trabajo, <b>'+d.accidentes.length+'</b> en accidentes y <b>'+d.pat.length+'</b> en salud.';
+    h+='Marcaste <b>'+d.laborales.length+'</b> en trabajo y <b>'+d.accidentes.length+'</b> en accidentes, y respondiste las '+CAT.patologicos.length+' partes de salud.<br>';
   }
+  h+='Tu familia: <b>'+(d.famList.length?esc(d.famList.map(function(f){return nombreFam(f.id)+' ('+f.quienes.join(', ')+')'}).join(' · ')):'ninguno que sepas')+'</b>';
   $('resumen').innerHTML=h;
 }
 $('sigue').addEventListener('click',function(){
