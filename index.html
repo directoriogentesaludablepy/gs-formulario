@@ -86,6 +86,10 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
 .chips button{font:inherit;font-size:15px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;color:var(--ink)}
 .chips button[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:700}
 .hab .esp{margin-top:8px}
+/* (v3.5) preguntas de Vista y Sueño */
+.sn.col{flex-direction:column;gap:8px}
+.grupo .ayudaG{margin:6px 0 0;color:var(--muted);font-size:15px}
+.ext .esp{margin-top:8px}
 </style>
 </head>
 <body>
@@ -156,9 +160,9 @@ nav button{font:inherit;font-weight:700;border-radius:12px;padding:14px 18px;bor
   <section id="s2">
     <h1>Tu salud</h1>
     <p class="ayuda">Respondé <b>cada parte</b>: marcá lo que te pasa. Si en esa parte no te pasa nada, marcá la <b>última opción</b> (por ejemplo: «No tengo problemas digestivos»).</p>
-    <h3>¿Estás realizando algún tratamiento?</h3>
+    <div id="tratWrap"><h3>¿Estás realizando algún tratamiento?</h3>
     <div class="sn" id="trat"><label><input type="radio" name="trat" value="Sí"><span>Sí</span></label><label><input type="radio" name="trat" value="No" checked><span>No</span></label></div>
-    <div id="tratBox" style="display:none"><label class="campo" for="tratCual">¿Cuál? <small>Contanos qué tratamiento y desde cuándo</small></label><input type="text" id="tratCual"></div>
+    <div id="tratBox" style="display:none"><label class="campo" for="tratCual">¿Cuál? <small>Contanos qué tratamiento y desde cuándo</small></label><input type="text" id="tratCual"></div></div>
     <div id="pats"></div>
   </section>
 
@@ -264,7 +268,8 @@ function corredor(exito, falla){
   };
 }
 var google = { script: { get run(){ return corredor(null, null); } } };
-var RUTAS = { anual: ['s0','s1','s2','sFam','s4'], admisional: ['s0','a1','a2','a3','a4','sFam','s4'] };
+/* (v3.5) "Tu salud" por sistema (s2) va en los dos tipos de examen */
+var RUTAS = { anual: ['s0','s1','s2','sFam','s4'], admisional: ['s0','a1','a2','a3','s2','a4','sFam','s4'] };
 var SECCIONES = ['sTipo','s0','s1','s2','sFam','a1','a2','a3','a4','s4','fin'];
 var TIPO = '', PASOS = [], paso = 0, enviando = false;
 function $(id){return document.getElementById(id)}
@@ -283,7 +288,8 @@ function armar(){
   $('accs').innerHTML=CAT.accidentes.map(function(i){return opcion(i,'acc')}).join('');
   /* (v3.4) cada parte es un grupo: la última opción ("no tengo problemas…") es excluyente */
   $('pats').innerHTML=CAT.patologicos.map(function(g,n){
-    return '<div class="grupo" id="pg_'+n+'"><h3>'+esc(g.g)+'</h3>'+g.items.map(function(i){return opcion(i,'pat',null,i[0]===g.ninguno)}).join('')+'</div>';
+    return '<div class="grupo" id="pg_'+n+'"><h3>'+esc(g.g)+'</h3>'+(g.ayuda?'<p class="ayudaG">'+esc(g.ayuda)+'</p>':'')+g.items.map(function(i){return opcion(i,'pat',null,i[0]===g.ninguno)}).join('')+'</div>'
+      +extrasHtml(g.extra);
   }).join('');
   /* admisional */
   $('labsA').innerHTML=CAT.laborales.map(function(i){return opcion(i,'laba')}).join('');
@@ -316,6 +322,15 @@ function armar(){
   var o='<option value="">Elegí la empresa</option>'+EMPRESAS.map(function(e){return '<option>'+esc(e)+'</option>'}).join('')+'<option value="__otra">Otra empresa</option>';
   $('emp').innerHTML=o;
 }
+/* (v3.5) preguntas que van debajo de Vista y de Sueño: todas con respuesta obligatoria */
+function extrasHtml(grupo){
+  var l=((CAT.extras||{})[grupo])||[];
+  return l.map(function(q){
+    return '<div class="oblig ext" id="ex_'+q[0]+'"><p>'+esc(q[1])+'</p><div class="sn'+(q[2].length>2?' col':'')+'">'
+      +q[2].map(function(o){return '<label><input type="radio" name="ex_'+q[0]+'" value="'+esc(o)+'"><span>'+esc(o)+'</span></label>'}).join('')+'</div>'
+      +(q[3]?'<div class="esp" data-exesp="'+q[0]+'" style="display:none"><input type="text" id="exc_'+q[0]+'" placeholder="'+esc(q[3])+'" aria-label="'+esc(q[3])+'"></div>':'')+'</div>';
+  }).join('');
+}
 function elegirTipo(t){
   TIPO = t; PASOS = RUTAS[t]; paso = 0;
   var adm = t==='admisional';
@@ -325,6 +340,8 @@ function elegirTipo(t){
   $('empLbl').textContent = adm ? 'Empresa donde vas a trabajar' : 'Empresa donde trabajás';
   $('tareaLbl').innerHTML = (adm ? 'Tarea que vas a desempeñar' : 'Tarea que desempeñás')+' <small>Por ejemplo: chofer, operario, administrativo</small>';
   $('cambiarTipo').style.display = TIPO_URL ? 'none' : 'inline';
+  $('tratWrap').style.display = adm ? 'none' : 'block';
+  $('s2').querySelector('h1').textContent = adm ? 'Tu salud, parte por parte' : 'Tu salud';
   var p=''; for(var i=0;i<PASOS.length;i++) p+='<i></i>'; $('prog').innerHTML=p;
   $('prog').style.display='flex'; $('nav').style.display='flex';
   pintar();
@@ -361,6 +378,11 @@ document.addEventListener('change',function(e){
     var hid=t.name.slice(4), hb=document.querySelector('[data-habesp="'+hid+'"]');
     if(hb) hb.style.display=t.value==='Sí'?'block':'none';
     $('hb_'+hid).className='oblig hab';
+  }
+  if(t.name && t.name.indexOf('ex_')===0){
+    var xk=t.name.slice(3), xb=document.querySelector('[data-exesp="'+xk+'"]');
+    if(xb) xb.style.display=t.value==='Sí'?'block':'none';
+    $('ex_'+xk).className='oblig ext';
   }
   if(t.id==='primerTrabajo'){
     ['empAnt','puestoAnt','tiempoAnt'].forEach(function(k){ $(k).disabled=t.checked; });
@@ -460,6 +482,11 @@ function validar(){
         var ult=gr.items.filter(function(it){return it[0]===gr.ninguno})[0];
         return faltaGrupo($('pg_'+g), 'Respondé la parte «'+gr.g+'»: marcá lo que te pasa'+(ult?' o «'+ult[1].replace(/\.$/,'')+'»':'')+'.');
       }
+      /* (v3.5) las preguntas de Vista y de Sueño */
+      var exs=((CAT.extras||{})[gr.extra])||[];
+      for(var q=0;q<exs.length;q++){
+        if(!radio('ex_'+exs[q][0])){ if(!soloMirar) $('ex_'+exs[q][0]).className='oblig ext falta'; return 'Respondé: '+exs[q][1]; }
+      }
     }
   }
   if(s==='sFam'){
@@ -496,8 +523,13 @@ function datos(){
     d.laborales=marcados('data-lab'); d.accidentes=marcados('data-acc');
     d.epp=radio('epp')||'No'; d.eppCual=val('eppCual');
     d.trat=radio('trat')||'No'; d.tratCual=val('tratCual');
-    d.pat=marcados('data-pat');
   }
+  /* (v3.5) los dos tipos: salud por sistema, con Vista y Sueño */
+  d.pat=marcados('data-pat');
+  d.extras={};
+  Object.keys(CAT.extras||{}).forEach(function(g){ CAT.extras[g].forEach(function(q){
+    d.extras[q[0]]=radio('ex_'+q[0]); var c=$('exc_'+q[0]); if(c) d.extras[q[0]+'_cual']=c.value.replace(/^\s+|\s+$/g,'');
+  }); });
   /* (v3.4) los dos tipos */
   d.famList=famElegidos(); d.famNinguno=famNinguno(); d.obs=val('obs');
   return d;
@@ -508,7 +540,7 @@ function resumir(){
   if(TIPO==='admisional'){
     h+='Trabajo anterior: <b>'+esc(d.primerTrabajo?'es tu primer trabajo':(d.empAnt||'—'))+'</b><br>'
       +'Distinguís los colores: <b>'+esc(d.colores)+'</b><br>'
-      +'Marcaste <b>'+(d.laborales.length+d.accidentes.length)+'</b> en trabajo y accidentes, y respondiste tu salud y tus hábitos.<br>';
+      +'Marcaste <b>'+(d.laborales.length+d.accidentes.length)+'</b> en trabajo y accidentes, y respondiste las '+CAT.patologicos.length+' partes de salud y tus hábitos.<br>';
   } else {
     h+='Marcaste <b>'+d.laborales.length+'</b> en trabajo y <b>'+d.accidentes.length+'</b> en accidentes, y respondiste las '+CAT.patologicos.length+' partes de salud.<br>';
   }
